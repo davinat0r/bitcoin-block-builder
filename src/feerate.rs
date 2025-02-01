@@ -3,6 +3,7 @@ use std::io::Write;
 use csv::StringRecord;
 use serde::Deserialize;
 
+pub const MAX_WEIGHT: f64 = 4_000_000.0;
 
 #[derive(Debug, Deserialize, Default, Clone)]
 pub struct MempoolIstance {
@@ -100,7 +101,7 @@ pub fn choose_txs_to_inlcude_in_block(mempool: &mut Vec<MempoolIstance>) {
     });
 
     let mut file = File::create("./block.txt").unwrap();
-    let mut w = 4_000_000.0;
+    let mut w = MAX_WEIGHT;
     let mut total_fee_in_block = 0.0;
     let mut sorted_idx = 0;
     while sorted_idx < mempool_sorted.len() {
@@ -118,10 +119,6 @@ pub fn choose_txs_to_inlcude_in_block(mempool: &mut Vec<MempoolIstance>) {
                 w-=mempool[idx].chain_weight;
                 total_fee_in_block+=mempool[idx].chain_fee;
             }
-            // else {
-            //     // sorted_idx+=1; // continue instead of breaking. Maybe we find smaller txs that we can still include
-            //     break;
-            // } 
         }
         sorted_idx+=1;
     }
